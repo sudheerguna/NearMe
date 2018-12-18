@@ -1,0 +1,714 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".EventsScreen">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:id="@+id/relative_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+
+                android:layout_marginTop="10dp"
+                android:background="@drawable/create_product_et2">
+
+                <Spinner
+                    android:id="@+id/spr_category"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="10dp"
+                    android:spinnerMode="dialog"></Spinner>
+            </RelativeLayout>
+
+            <com.product.nearme.cview.NeoGramMEditText
+                android:id="@+id/et_name"
+                style="@android:style/TextAppearance.DeviceDefault.Medium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:hint="Enter Name"
+                android:inputType="text"
+                android:textColor="@color/black" />
+
+            <com.product.nearme.cview.NeoGramMEditText
+                android:id="@+id/et_desc"
+                style="@android:style/TextAppearance.DeviceDefault.Medium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:hint="Enter Description"
+                android:inputType="text" />
+
+            <com.product.nearme.cview.NeoGramMEditText
+                android:id="@+id/et_loc"
+                style="@android:style/TextAppearance.DeviceDefault.Medium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:hint="Location"
+                android:inputType="text"
+                android:textColor="@color/black" />
+
+            <com.product.nearme.cview.NeoGramMEditText
+                android:id="@+id/et_address"
+                style="@android:style/TextAppearance.DeviceDefault.Medium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:hint="Address"
+                android:clickable="false"
+                android:focusable="false"
+                android:textColor="@color/black" />
+
+            <com.product.nearme.cview.TypefaceTextview
+                style="@android:style/TextAppearance.DeviceDefault.Medium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:hint="Timings and Date" />
+
+            <RadioGroup
+                android:id="@+id/radioGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_margin="5dp"
+                android:orientation="vertical">
+
+                <RadioButton
+                    android:id="@+id/radioMale"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="Always Available"
+                    android:typeface="serif" />
+
+                <RadioButton
+                    android:id="@+id/radFemale"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Custom Timings"
+                    android:typeface="serif" />
+            </RadioGroup>
+
+            <LinearLayout
+                android:id="@+id/layout_timings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:orientation="horizontal"
+                    android:weightSum="2">
+
+                    <com.product.nearme.cview.NeoGramMEditText
+                        android:id="@+id/txt_starttime"
+                        style="@android:style/TextAppearance.DeviceDefault.Medium"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginRight="5dp"
+                        android:layout_weight="1"
+                        android:clickable="false"
+                        android:drawablePadding="0dp"
+                        android:drawableRight="@mipmap/down_arrow"
+                        android:focusable="false"
+                        android:gravity="left|center"
+                        android:spinnerMode="dialog"
+                        android:text="09:00 am" />
+
+                    <com.product.nearme.cview.TypefaceTextview
+                        style="@android:style/TextAppearance.DeviceDefault.Medium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:hint="-"
+                        android:textColor="@color/black" />
+
+                    <com.product.nearme.cview.NeoGramMEditText
+                        android:id="@+id/txt_endtime"
+                        style="@android:style/TextAppearance.DeviceDefault.Medium"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_weight="1"
+                        android:clickable="false"
+                        android:drawablePadding="0dp"
+                        android:drawableRight="@mipmap/down_arrow"
+                        android:focusable="false"
+                        android:gravity="left|center"
+                        android:spinnerMode="dialog"
+                        android:text="10:00 pm" />
+
+                    <com.product.nearme.cview.ButtonTypeface
+                        android:id="@+id/bt_applytoall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="45dp"
+                        android:background="@color/colorPrimary"
+                        android:padding="5dp"
+                        android:text="APPLY TO ALL"
+                        android:textColor="#ffffff" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <com.product.nearme.cview.TypefaceTextview
+                        android:id="@+id/txt_mon"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_centerInParent="true"
+                        android:layout_gravity="center"
+                        android:background="@drawable/blue_textview_drawable"
+                        android:gravity="center"
+                        android:text="M"
+                        android:textColor="@color/white" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="15dp"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+
+                        <com.product.nearme.cview.NeoGramMEditText
+                            android:id="@+id/edt_mon_time"
+                            style="@android:style/TextAppearance.DeviceDefault.Medium"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginRight="10dp"
+                            android:layout_weight="1"
+                            android:clickable="false"
+                            android:drawablePadding="0dp"
+                            android:drawableRight="@mipmap/down_arrow"
+                            android:focusable="false"
+                            android:gravity="left|center"
+                            android:spinnerMode="dialog"
+                            android:text="09:00 am" />
+
+                        <com.product.nearme.cview.TypefaceTextview
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:text="-"
+                            android:textColor="@color/black" />
+
+                        <com.product.nearme.cview.NeoGramMEditText
+                            android:id="@+id/edt_mon_time2"
+                            style="@android:style/TextAppearance.DeviceDefault.Medium"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_weight="1"
+                            android:clickable="false"
+                            android:drawablePadding="0dp"
+                            android:drawableRight="@mipmap/down_arrow"
+                            android:focusable="false"
+                            android:gravity="left|center"
+                            android:spinnerMode="dialog"
+                            android:text="09:00 am" />
+
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginTop="5dp"
+                    android:orientation="horizontal">
+
+                    <com.product.nearme.cview.TypefaceTextview
+                        android:id="@+id/txt_tue"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_centerInParent="true"
+                        android:layout_gravity="center"
+                        android:background="@drawable/blue_textview_drawable"
+                        android:gravity="center"
+                        android:text="T"
+                        android:textColor="@color/white" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="15dp"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+
+                        <com.product.nearme.cview.NeoGramMEditText
+                            android:id="@+id/edt_t_time1"
+                            style="@android:style/TextAppearance.DeviceDefault.Medium"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginRight="5dp"
+                            android:layout_weight="1"
+                            android:clickable="false"
+                            android:drawablePadding="0dp"
+                            android:drawableRight="@mipmap/down_arrow"
+                            android:focusable="false"
+                            android:gravity="left|center"
+                            android:spinnerMode="dialog"
+                            android:text="09:00 am" />
+
+                        <com.product.nearme.cview.TypefaceTextview
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:text="-"
+                            android:textColor="@color/black" />
+
+                        <com.product.nearme.cview.NeoGramMEditText
+                            android:id="@+id/edt_t_time2"
+                            style="@android:style/TextAppearance.DeviceDefault.Medium"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_weight="1"
+                            android:clickable="false"
+                            android:drawablePadding="0dp"
+                            android:drawableRight="@mipmap/down_arrow"
+                            android:focusable="false"
+                            android:gravity="left|center"
+                            android:spinnerMode="dialog"
+                            android:text="09:00 am" />
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginTop="5dp"
+                    android:orientation="horizontal">
+
+                    <com.product.nearme.cview.TypefaceTextview
+                        android:id="@+id/txt_wed"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_centerInParent="true"
+                        android:layout_gravity="center"
+                        android:background="@drawable/blue_textview_drawable"
+                        android:gravity="center"
+                        android:text="W"
+                        android:textColor="@color/white" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="15dp"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+
+                        <com.product.nearme.cview.NeoGramMEditText
+                            android:id="@+id/edt_w_time1"
+                            style="@android:style/TextAppearance.DeviceDefault.Medium"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginRight="5dp"
+                            android:layout_weight="1"
+                            android:clickable="false"
+                            android:drawablePadding="0dp"
+                            android:drawableRight="@mipmap/down_arrow"
+                            android:focusable="false"
+                            android:gravity="left|center"
+                            android:spinnerMode="dialog"
+                            android:text="09:00 am" />
+
+                        <com.product.nearme.cview.TypefaceTextview
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:text="-"
+                            android:textColor="@color/black" />
+
+                        <com.product.nearme.cview.NeoGramMEditText
+                            android:id="@+id/edt_w_time2"
+                            style="@android:style/TextAppearance.DeviceDefault.Medium"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_weight="1"
+                            android:clickable="false"
+                            android:drawablePadding="0dp"
+                            android:drawableRight="@mipmap/down_arrow"
+                            android:focusable="false"
+                            android:gravity="left|center"
+                            android:spinnerMode="dialog"
+                            android:text="09:00 am" />
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginTop="5dp"
+                    android:orientation="horizontal">
+
+                    <com.product.nearme.cview.TypefaceTextview
+                        android:id="@+id/txt_thu"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_centerInParent="true"
+                        android:layout_gravity="center"
+                        android:background="@drawable/blue_textview_drawable"
+                        android:gravity="center"
+                        android:text="T"
+                        android:textColor="@color/white" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="15dp"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+
+                        <com.product.nearme.cview.NeoGramMEditText
+                            android:id="@+id/edt_th_time1"
+                            style="@android:style/TextAppearance.DeviceDefault.Medium"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginRight="5dp"
+                            android:layout_weight="1"
+                            android:clickable="false"
+                            android:drawablePadding="0dp"
+                            android:drawableRight="@mipmap/down_arrow"
+                            android:focusable="false"
+                            android:gravity="left|center"
+                            android:spinnerMode="dialog"
+                            android:text="09:00 am" />
+
+                        <com.product.nearme.cview.TypefaceTextview
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:text="-"
+                            android:textColor="@color/black" />
+
+                        <com.product.nearme.cview.NeoGramMEditText
+                            android:id="@+id/edt_th_time2"
+                            style="@android:style/TextAppearance.DeviceDefault.Medium"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_weight="1"
+                            android:clickable="false"
+                            android:drawablePadding="0dp"
+                            android:drawableRight="@mipmap/down_arrow"
+                            android:focusable="false"
+                            android:gravity="left|center"
+                            android:spinnerMode="dialog"
+                            android:text="09:00 am" />
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginTop="5dp"
+                    android:orientation="horizontal">
+
+                    <com.product.nearme.cview.TypefaceTextview
+                        android:id="@+id/txt_fri"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_centerInParent="true"
+                        android:layout_gravity="center"
+                        android:background="@drawable/blue_textview_drawable"
+                        android:gravity="center"
+                        android:text="F"
+                        android:textColor="@color/white" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="15dp"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+
+                        <com.product.nearme.cview.NeoGramMEditText
+                            android:id="@+id/edt_f_time1"
+                            style="@android:style/TextAppearance.DeviceDefault.Medium"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginRight="5dp"
+                            android:layout_weight="1"
+                            android:clickable="false"
+                            android:drawablePadding="0dp"
+                            android:drawableRight="@mipmap/down_arrow"
+                            android:focusable="false"
+                            android:gravity="left|center"
+                            android:spinnerMode="dialog"
+                            android:text="09:00 am" />
+
+                        <com.product.nearme.cview.TypefaceTextview
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:text="-"
+                            android:textColor="@color/black" />
+
+                        <com.product.nearme.cview.NeoGramMEditText
+                            android:id="@+id/edt_f_time2"
+                            style="@android:style/TextAppearance.DeviceDefault.Medium"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_weight="1"
+                            android:clickable="false"
+                            android:drawablePadding="0dp"
+                            android:drawableRight="@mipmap/down_arrow"
+                            android:focusable="false"
+                            android:gravity="left|center"
+                            android:spinnerMode="dialog"
+                            android:text="09:00 am" />
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginTop="5dp"
+                    android:orientation="horizontal">
+
+                    <com.product.nearme.cview.TypefaceTextview
+                        android:id="@+id/txt_sat"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_centerInParent="true"
+                        android:layout_gravity="center"
+                        android:background="@drawable/blue_textview_drawable"
+                        android:gravity="center"
+                        android:text="S"
+                        android:textColor="@color/white" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="15dp"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+
+                        <com.product.nearme.cview.NeoGramMEditText
+                            android:id="@+id/edt_s_time1"
+                            style="@android:style/TextAppearance.DeviceDefault.Medium"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginRight="5dp"
+                            android:layout_weight="1"
+                            android:clickable="false"
+                            android:drawablePadding="0dp"
+                            android:drawableRight="@mipmap/down_arrow"
+                            android:focusable="false"
+                            android:gravity="left|center"
+                            android:spinnerMode="dialog"
+                            android:text="09:00 am" />
+
+                        <com.product.nearme.cview.TypefaceTextview
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:text="-"
+                            android:textColor="@color/black" />
+
+                        <com.product.nearme.cview.NeoGramMEditText
+                            android:id="@+id/edt_s_time2"
+                            style="@android:style/TextAppearance.DeviceDefault.Medium"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_weight="1"
+                            android:clickable="false"
+                            android:drawablePadding="0dp"
+                            android:drawableRight="@mipmap/down_arrow"
+                            android:focusable="false"
+                            android:gravity="left|center"
+                            android:spinnerMode="dialog"
+                            android:text="09:00 am" />
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginTop="5dp"
+                    android:orientation="horizontal">
+
+                    <com.product.nearme.cview.TypefaceTextview
+                        android:id="@+id/txt_sun"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_centerInParent="true"
+                        android:layout_gravity="center"
+                        android:background="@drawable/blue_textview_drawable"
+                        android:gravity="center"
+                        android:text="S"
+                        android:textColor="@color/white" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="15dp"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+
+                        <com.product.nearme.cview.NeoGramMEditText
+                            android:id="@+id/edt_sn_time1"
+                            style="@android:style/TextAppearance.DeviceDefault.Medium"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginRight="5dp"
+                            android:layout_weight="1"
+                            android:clickable="false"
+                            android:drawablePadding="0dp"
+                            android:drawableRight="@mipmap/down_arrow"
+                            android:focusable="false"
+                            android:gravity="left|center"
+                            android:spinnerMode="dialog"
+                            android:text="09:00 am" />
+
+                        <com.product.nearme.cview.TypefaceTextview
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:text="-"
+                            android:textColor="@color/black" />
+
+                        <com.product.nearme.cview.NeoGramMEditText
+                            android:id="@+id/edt_sn_time2"
+                            style="@android:style/TextAppearance.DeviceDefault.Medium"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_weight="1"
+                            android:clickable="false"
+                            android:drawablePadding="0dp"
+                            android:drawableRight="@mipmap/down_arrow"
+                            android:focusable="false"
+                            android:gravity="left|center"
+                            android:spinnerMode="dialog"
+                            android:text="09:00 am" />
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+            <com.product.nearme.cview.TypefaceTextview
+                style="@android:style/TextAppearance.DeviceDefault.Medium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:hint="Contact Details"
+                android:textColor="@color/black" />
+
+            <com.product.nearme.cview.NeoGramMEditText
+                android:id="@+id/edt_number"
+                style="@android:style/TextAppearance.DeviceDefault.Medium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:hint="Mobile Number"
+                android:inputType="number"
+                android:textColor="@color/black" />
+
+            <com.product.nearme.cview.NeoGramMEditText
+                android:id="@+id/edt_email"
+                style="@android:style/TextAppearance.DeviceDefault.Medium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:hint="Email"
+                android:inputType="textWebEmailAddress"
+                android:textColor="@color/black" />
+
+            <com.product.nearme.cview.NeoGramMEditText
+                android:id="@+id/edt_website"
+                style="@android:style/TextAppearance.DeviceDefault.Medium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:hint="Website"
+                android:inputType="textWebEditText"
+                android:textColor="@color/black" />
+
+            <com.product.nearme.cview.ButtonTypeface
+                android:id="@+id/btn_finish"
+                style="@android:style/TextAppearance.DeviceDefault.Medium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:background="@color/colorPrimary"
+                android:text="Finish"
+                android:textColor="@color/white" />
+
+        </LinearLayout>
+
+    </ScrollView>
+</LinearLayout>
