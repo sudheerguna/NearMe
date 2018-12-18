@@ -698,6 +698,14 @@
                 android:inputType="textWebEditText"
                 android:textColor="@color/black" />
 
+            <ImageView
+                android:id="@+id/img_1"
+                android:layout_margin="10dp"
+                android:layout_gravity="center"
+                android:src="@mipmap/ic_launcher"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
             <com.product.nearme.cview.ButtonTypeface
                 android:id="@+id/btn_finish"
                 style="@android:style/TextAppearance.DeviceDefault.Medium"
