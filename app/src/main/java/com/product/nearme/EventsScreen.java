@@ -2,12 +2,29 @@ package com.product.nearme;
 
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
+import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
@@ -30,17 +47,37 @@ import com.product.nearme.adapter.CategoryListAdapter;
 import com.product.nearme.cview.NeoGramMEditText;
 import com.product.nearme.cview.TypefaceTextview;
 import com.product.nearme.models.CategoryName;
+import com.product.nearme.utils.AndroidMultiPartEntity;
+import com.product.nearme.utils.UtilitiesImage;
 import com.product.nearme.utils.constant;
 import com.product.nearme.volley.AppController;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.content.InputStreamBody;
+import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import simplecropimage.CropImage;
 
 public class EventsScreen extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
     static NeoGramMEditText txt_starttime, txt_endtime, edt_mon_time, edt_mon_time2, edt_t_time1, edt_t_time2, edt_w_time1, edt_w_time2, edt_th_time1, edt_th_time2, edt_f_time1, edt_f_time2, edt_s_time1, edt_s_time2, edt_sn_time1, edt_sn_time2,
@@ -52,6 +89,11 @@ public class EventsScreen extends AppCompatActivity implements View.OnClickListe
     Spinner spr_category;
     String categoryName, categoryId, address, lat, lng;
     RadioGroup radioGroup;
+    private Integer PHOTO_PICK = 0x4, PHOTO_CLICK = 0x2, PHOTO_CROP = 0x3;
+    private Uri mPhotoUri = null;
+    private File imgFile, sdCardDirectory;
+    String filepath = null, img_path;
+    long totalSize = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,6 +165,7 @@ public class EventsScreen extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.txt_fri).setOnClickListener(this);
         findViewById(R.id.txt_sat).setOnClickListener(this);
         findViewById(R.id.txt_sun).setOnClickListener(this);
+        findViewById(R.id.img_1).setOnClickListener(this);
 
         findViewById(R.id.btn_finish).setOnClickListener(this);
         spr_category.setOnItemSelectedListener(this);
@@ -256,7 +299,68 @@ public class EventsScreen extends AppCompatActivity implements View.OnClickListe
             case R.id.et_address:
                 getplaces();
                 break;
+            case R.id.img_1:
+                openimage();
+                break;
         }
+    }
+
+    private void openimage() {
+        try {
+            if (Build.VERSION.SDK_INT >= 23) {
+                if (constant.haveCameraPermissions(EventsScreen.this)) {
+                    if (constant.writePermissions(EventsScreen.this)) {
+                        cameraFunctionality();
+                    } else {
+                        constant.requestwritePermission(EventsScreen.this);
+                    }
+
+                } else {
+                    constant.requestCameraPermission(EventsScreen.this);
+                }
+            } else {
+                cameraFunctionality();
+            }
+
+        } catch (Exception e) {
+
+        }
+
+    }
+
+    private void cameraFunctionality() {
+
+        final CharSequence[] items = {"Take Photo", "Choose from Gallery",
+                "Cancel"};
+
+        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(
+                EventsScreen.this);
+        builder.setTitle("Add Photo");
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int item) {
+                if (items[item].equals("Take Photo")) {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    mPhotoUri = getContentResolver().insert(
+                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                            new ContentValues());
+
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, mPhotoUri);
+                    startActivityForResult(intent, PHOTO_CLICK);
+                } else if (items[item].equals("Choose from Gallery")) {
+                    Intent intent = new Intent(
+                            Intent.ACTION_PICK,
+                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    intent.setType("image/*");
+                    startActivityForResult(
+                            Intent.createChooser(intent, "Select File"),
+                            PHOTO_PICK);
+                } else if (items[item].equals("Cancel")) {
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.show();
     }
 
     private void getplaces() {
@@ -318,6 +422,117 @@ public class EventsScreen extends AppCompatActivity implements View.OnClickListe
                 // The user canceled the operation.
             }
         }
+        if (resultCode == RESULT_OK && requestCode == PHOTO_PICK) {
+
+                /*String filepath = UtilitiesImage
+                        .getpath(data, BuyerProfileEditAactivity.this);
+
+                startCropImage(filepath);*/
+
+
+            String path = UtilitiesImage.getpath(data, EventsScreen.this);
+            imgFile = new File(path);
+            Bitmap bb11 = BitmapFactory.decodeFile(imgFile
+                    .getAbsolutePath());
+
+            sdCardDirectory = new File(
+                    Environment
+                            .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+                    "Sharent_temp");
+
+            if (!sdCardDirectory.exists()) {
+                if (!sdCardDirectory.mkdirs()) {
+                    Log.d("MySnaps", "failed to create directory");
+                }
+            }
+
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss")
+                    .format(new Date());
+
+            String nw = "MFA_CROP_" + timeStamp + ".jpeg";
+
+            File image = new File(sdCardDirectory, nw);
+
+            boolean success = false;
+
+            // Encode the file as a PNG image.
+            FileOutputStream outStream;
+            try {
+
+                outStream = new FileOutputStream(image);
+                bb11.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
+                /* 100 to keep full quality of the image */
+
+                outStream.flush();
+                outStream.close();
+                success = true;
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            img_path = String.valueOf(image);
+            String filepath = String.valueOf(image); //UtilitiesImage.getpath(data, BuyerProfileEditAactivity.this);
+            startCropImage(filepath);
+
+        } else if (resultCode == RESULT_OK && requestCode == PHOTO_CLICK) {
+
+            String conString = UtilitiesImage.convertImageUriToFile(mPhotoUri,
+                    EventsScreen.this);
+            startCropImage(conString);
+
+        } else if (resultCode == RESULT_OK && requestCode == PHOTO_CROP) {
+
+            String path = data.getStringExtra(CropImage.IMAGE_PATH);
+            imgFile = new File(path);
+
+            if (imgFile.exists()) {
+                Bitmap myBitmap = BitmapFactory.decodeFile(imgFile
+                        .getAbsolutePath());
+                //strProfileImageSrc = UtilitiesImage.converToBase64(myBitmap);
+                filepath = path;
+                Log.e("filepath", "#" + filepath);
+                //imagepath.add(filePath);
+                //	Toast.makeText(getActivity(), ""+imagepath.size(), Toast.LENGTH_SHORT).show();
+                Bitmap conv_bm = getRoundedBitmap(myBitmap);
+                //SetViewPagerImage();
+                ImageView img_profile = (ImageView) findViewById(R.id.img_1);
+                img_profile.setImageBitmap(conv_bm);
+            }
+        }
+    }
+
+    private void startCropImage(String path) {
+
+        Intent intent = new Intent(EventsScreen.this, CropImage.class);
+        intent.putExtra(CropImage.IMAGE_PATH, path);
+        intent.putExtra(CropImage.SCALE, true);
+        intent.putExtra(CropImage.ASPECT_X, 2);
+        intent.putExtra(CropImage.ASPECT_Y, 2);
+        intent.putExtra(CropImage.CIRCLE_CROP, true);
+
+        startActivityForResult(intent, PHOTO_CROP);
+    }
+
+    public static Bitmap getRoundedBitmap(Bitmap bitmap) {
+        final Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        final Canvas canvas = new Canvas(output);
+
+        final int color = Color.RED;
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+        final RectF rectF = new RectF(rect);
+
+        paint.setAntiAlias(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        paint.setColor(color);
+        canvas.drawOval(rectF, paint);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, rect, rect, paint);
+
+        bitmap.recycle();
+
+        return output;
     }
 
     private void applytoall() {
@@ -473,17 +688,17 @@ public class EventsScreen extends AppCompatActivity implements View.OnClickListe
 
     private void Updatedata() {
         if (constant.isEmptyString(et_name.getText().toString())) {
-            Toast.makeText(EventsScreen.this,"Enter name",Toast.LENGTH_LONG).show();
+            Toast.makeText(EventsScreen.this, "Enter name", Toast.LENGTH_LONG).show();
         } else if (constant.isEmptyString(et_desc.getText().toString())) {
-            Toast.makeText(EventsScreen.this,"Enter description",Toast.LENGTH_LONG).show();
+            Toast.makeText(EventsScreen.this, "Enter description", Toast.LENGTH_LONG).show();
         } else if (constant.isEmptyString(et_address.getText().toString())) {
-            Toast.makeText(EventsScreen.this,"Enter address",Toast.LENGTH_LONG).show();
+            Toast.makeText(EventsScreen.this, "Enter address", Toast.LENGTH_LONG).show();
         } else if (constant.isEmptyString(et_mobile.getText().toString())) {
-            Toast.makeText(EventsScreen.this,"Enter mobile",Toast.LENGTH_LONG).show();
+            Toast.makeText(EventsScreen.this, "Enter mobile", Toast.LENGTH_LONG).show();
         } else if (constant.isEmptyString(et_email.getText().toString())) {
-            Toast.makeText(EventsScreen.this,"Enter email",Toast.LENGTH_LONG).show();
+            Toast.makeText(EventsScreen.this, "Enter email", Toast.LENGTH_LONG).show();
         } else if (constant.isEmptyString(et_website.getText().toString())) {
-            Toast.makeText(EventsScreen.this,"Enter website",Toast.LENGTH_LONG).show();
+            Toast.makeText(EventsScreen.this, "Enter website", Toast.LENGTH_LONG).show();
         } else {
             try {
                 JSONObject jsonObj = new JSONObject();
@@ -533,13 +748,132 @@ public class EventsScreen extends AppCompatActivity implements View.OnClickListe
 
                 Log.e("jsonObj", "#" + jsonObj.toString());
 
-                uploaddata(jsonObj);
+//                uploaddata(jsonObj);
 
+                new uplaodmultiprtdata(jsonObj).execute();
             } catch (Exception e) {
 
             }
         }
     }
+
+    private class uplaodmultiprtdata extends AsyncTask<Void, Integer, String> {
+        ProgressDialog mProgressDialog;
+        JSONObject jsonObj;
+        public uplaodmultiprtdata(JSONObject jsonObj) {
+            this.jsonObj = jsonObj;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            //progressBar.setProgress(0);
+
+            try {
+                mProgressDialog = new ProgressDialog(EventsScreen.this);
+                mProgressDialog.setTitle("Uploading");
+                mProgressDialog.setMessage("Please Wait!");
+                mProgressDialog.setIndeterminate(false);
+                mProgressDialog.setMax(100);
+                mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                // Show ProgressBar
+                mProgressDialog.setCancelable(false);
+                //  mProgressDialog.setCanceledOnTouchOutside(false);
+                mProgressDialog.show();
+
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... progress) {
+
+            mProgressDialog.setProgress(progress[0]);
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            return uploadFile();
+        }
+
+        @SuppressWarnings("deprecation")
+        private String uploadFile() {
+
+            String responseString = null;
+
+            String url = "http://ec2-13-56-34-157.us-west-1.compute.amazonaws.com:8088/wyat-work/api/pbc/v1/pbcast/createads";
+            HttpClient httpclient = new DefaultHttpClient();
+            HttpPost httppost = new HttpPost(url);
+//            httppost.addHeader("Content-Type", "application/octet-stream");
+//            httppost.addHeader("Content-Type", "multipart/form-data");
+
+
+            try {
+                AndroidMultiPartEntity entity = new AndroidMultiPartEntity(
+                        new AndroidMultiPartEntity.ProgressListener() {
+
+                            @Override
+                            public void transferred(long num) {
+                                publishProgress((int) ((num / (float) totalSize) * 100));
+                            }
+                        });
+
+                try {
+                    if (filepath != null) {
+                        File sourceFile = new File(filepath);
+//                        entity.addPart("profile_image", new FileBody(sourceFile));
+                        Log.e("sourceFile","#"+sourceFile);
+
+                        FileInputStream fileInputStream = new FileInputStream(sourceFile);
+                        entity.addPart("Imagefile1", new InputStreamBody(fileInputStream, "image/jpeg", "file_name.jpg"));
+                    }
+                    entity.addPart("createbeanmodel", new StringBody(jsonObj.toString()));
+
+                } catch (Exception e) {
+                    // TODO: handle exception
+                    e.printStackTrace();
+                }
+
+                totalSize = entity.getContentLength();
+                httppost.setEntity(entity);
+
+                // Making server call
+                HttpResponse response = httpclient.execute(httppost);
+                HttpEntity r_entity = response.getEntity();
+
+                int statusCode = response.getStatusLine().getStatusCode();
+                if (statusCode == 200) {
+                    // Server response
+                    responseString = EntityUtils.toString(r_entity);
+                } else {
+                    responseString = "Error occurred! Http Status Code: "
+                            + statusCode;
+                }
+
+            } catch (ClientProtocolException e) {
+                responseString = e.toString();
+            } catch (IOException e) {
+                responseString = e.toString();
+            }
+            Log.e("responseString", responseString);
+            return responseString;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            // showing the server response in an alert dialog
+            //showAlert(result);
+
+            super.onPostExecute(result);
+
+            if (mProgressDialog != null) {
+                mProgressDialog.dismiss();
+            }
+        }
+
+    }
+
 
     private void uploaddata(final JSONObject jsonObj) {
         final ProgressDialog progressDialog = new ProgressDialog(EventsScreen.this);
