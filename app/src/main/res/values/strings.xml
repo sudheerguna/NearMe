@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">NearMe</string>
+
+    <string name="saving_image">saving_image</string>
+    <string name="preparing_card">preparing_card</string>
+    <string name="no_storage_card">no_storage_card</string>
+    <string name="not_enough_space">not_enough_space</string>
+
 </resources>

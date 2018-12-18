@@ -9,6 +9,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        useLibrary 'org.apache.http.legacy'
     }
     buildTypes {
         release {
@@ -16,6 +17,13 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+}
+repositories {
+    maven {
+        jcenter()
+        url 'https://jitpack.io'
+    }
+    mavenCentral()
 }
 
 dependencies {
@@ -29,4 +37,8 @@ dependencies {
     implementation 'com.mcxiaoke.volley:library:1.0.19'
     implementation 'com.squareup.retrofit2:converter-gson:2.0.2'
     implementation 'com.google.android.gms:play-services-places:15.0.1'
+    compile('org.apache.httpcomponents:httpmime:4.3') {
+        exclude module: "httpclient"
+    }
+    compile group: 'org.apache.httpcomponents', name: 'httpclient-android', version: '4.3.5.1'
 }
