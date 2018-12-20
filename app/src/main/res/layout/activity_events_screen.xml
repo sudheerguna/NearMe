@@ -39,7 +39,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:hint="Enter Name"
+                android:hint="Interest Name"
                 android:inputType="text"
                 android:textColor="@color/black" />
 
@@ -68,9 +68,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:hint="Address"
                 android:clickable="false"
                 android:focusable="false"
+                android:hint="Address"
                 android:textColor="@color/black" />
 
             <com.product.nearme.cview.TypefaceTextview
@@ -78,7 +78,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:hint="Timings and Date" />
+                android:text="Timings and Date"
+                android:textColor="@color/black" />
 
             <RadioGroup
                 android:id="@+id/radioGroup"
@@ -665,7 +666,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:hint="Contact Details"
+                android:text="Contact Details"
                 android:textColor="@color/black" />
 
             <com.product.nearme.cview.NeoGramMEditText
@@ -698,13 +699,81 @@
                 android:inputType="textWebEditText"
                 android:textColor="@color/black" />
 
-            <ImageView
-                android:id="@+id/img_1"
-                android:layout_margin="10dp"
-                android:layout_gravity="center"
-                android:src="@mipmap/ic_launcher"
+            <LinearLayout
+                android:id="@+id/add_images"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <com.product.nearme.cview.TypefaceTextview
+                    style="@android:style/TextAppearance.DeviceDefault.Medium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:text="Add Images"
+                    android:textColor="@color/black" />
+
+                <ImageView
+                    android:layout_margin="5dp"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:src="@mipmap/addcircle" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_images"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/borderimage">
+
+                    <ImageView
+                        android:id="@+id/img_1"
+                        android:layout_width="200dp"
+                        android:layout_height="200dp"
+                        android:layout_centerHorizontal="true"
+                        android:layout_gravity="center"
+                        android:layout_margin="10dp"
+                        android:src="@mipmap/noimage_available" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/borderimage">
+
+                    <ImageView
+                        android:id="@+id/img_2"
+                        android:layout_width="200dp"
+                        android:layout_height="200dp"
+                        android:layout_centerHorizontal="true"
+                        android:layout_gravity="center"
+                        android:layout_margin="10dp"
+                        android:src="@mipmap/noimage_available" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/borderimage">
+
+                    <ImageView
+                        android:id="@+id/img_3"
+                        android:layout_width="200dp"
+                        android:layout_height="200dp"
+                        android:layout_centerHorizontal="true"
+                        android:layout_gravity="center"
+                        android:layout_margin="10dp"
+                        android:src="@mipmap/noimage_available" />
+                </RelativeLayout>
+            </LinearLayout>
 
             <com.product.nearme.cview.ButtonTypeface
                 android:id="@+id/btn_finish"
@@ -712,6 +781,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
                 android:background="@color/colorPrimary"
                 android:text="Finish"
                 android:textColor="@color/white" />
