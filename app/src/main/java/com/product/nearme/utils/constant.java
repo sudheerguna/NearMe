@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,4 +77,12 @@ public class constant {
 
     }
 
+    public static final boolean isValidEmail(CharSequence target) {
+        if (target == null || TextUtils.isEmpty(target)) {
+            return false;
+        } else {
+            return android.util.Patterns.EMAIL_ADDRESS.matcher(target)
+                    .matches();
+        }
+    }
 }

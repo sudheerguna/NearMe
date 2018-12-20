@@ -14,6 +14,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -93,7 +94,9 @@ public class EventsScreen extends AppCompatActivity implements View.OnClickListe
     private Uri mPhotoUri = null;
     private File imgFile, sdCardDirectory;
     String filepath = null, img_path;
-    long totalSize = 0;
+    long totalSize = 0, image_pos = 0;
+    RadioButton radioMale, radioFeMale;
+    private ArrayList<String> files = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,6 +131,8 @@ public class EventsScreen extends AppCompatActivity implements View.OnClickListe
         et_website = (NeoGramMEditText) findViewById(R.id.edt_website);
         et_email = (NeoGramMEditText) findViewById(R.id.edt_email);
         spr_category = (Spinner) findViewById(R.id.spr_category);
+        radioMale = (RadioButton) findViewById(R.id.radioMale);
+        radioFeMale = (RadioButton) findViewById(R.id.radFemale);
 
         CategoryNameList = new ArrayList<>();
 
@@ -166,12 +171,22 @@ public class EventsScreen extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.txt_sat).setOnClickListener(this);
         findViewById(R.id.txt_sun).setOnClickListener(this);
         findViewById(R.id.img_1).setOnClickListener(this);
+        findViewById(R.id.img_2).setOnClickListener(this);
+        findViewById(R.id.img_3).setOnClickListener(this);
 
+        findViewById(R.id.add_images).setOnClickListener(this);
         findViewById(R.id.btn_finish).setOnClickListener(this);
         spr_category.setOnItemSelectedListener(this);
+        findViewById(R.id.layout_images).setVisibility(View.GONE);
+
+        Typeface font = Typeface.createFromAsset(getAssets(),
+                "fonts/SF-Pro-Display-Regular.otf");
+        radioMale.setTypeface(font);
+        radioFeMale.setTypeface(font);
 
         findViewById(R.id.layout_timings).setVisibility(View.GONE);
         radioGroup = (RadioGroup) findViewById(R.id.radioGroup);
+/*
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -185,7 +200,9 @@ public class EventsScreen extends AppCompatActivity implements View.OnClickListe
                 }
             }
         });
+*/
 
+        delete_temps();
         getspinnerdata();
     }
 
@@ -300,8 +317,28 @@ public class EventsScreen extends AppCompatActivity implements View.OnClickListe
                 getplaces();
                 break;
             case R.id.img_1:
+                image_pos = 0;
                 openimage();
                 break;
+            case R.id.img_2:
+                image_pos = 1;
+                openimage();
+                break;
+            case R.id.img_3:
+                image_pos = 2;
+                openimage();
+                break;
+            case R.id.add_images:
+                Addimages();
+                break;
+        }
+    }
+
+    private void Addimages() {
+        if (findViewById(R.id.layout_images).getVisibility() == View.VISIBLE) {
+            findViewById(R.id.layout_images).setVisibility(View.GONE);
+        } else {
+            findViewById(R.id.layout_images).setVisibility(View.VISIBLE);
         }
     }
 
@@ -314,7 +351,6 @@ public class EventsScreen extends AppCompatActivity implements View.OnClickListe
                     } else {
                         constant.requestwritePermission(EventsScreen.this);
                     }
-
                 } else {
                     constant.requestCameraPermission(EventsScreen.this);
                 }
@@ -489,15 +525,19 @@ public class EventsScreen extends AppCompatActivity implements View.OnClickListe
             if (imgFile.exists()) {
                 Bitmap myBitmap = BitmapFactory.decodeFile(imgFile
                         .getAbsolutePath());
-                //strProfileImageSrc = UtilitiesImage.converToBase64(myBitmap);
-                filepath = path;
-                Log.e("filepath", "#" + filepath);
-                //imagepath.add(filePath);
-                //	Toast.makeText(getActivity(), ""+imagepath.size(), Toast.LENGTH_SHORT).show();
-                Bitmap conv_bm = getRoundedBitmap(myBitmap);
-                //SetViewPagerImage();
-                ImageView img_profile = (ImageView) findViewById(R.id.img_1);
-                img_profile.setImageBitmap(conv_bm);
+                String filepath = path;
+                files.add(filepath);
+//               Bitmap conv_bm = getRoundedBitmap(myBitmap);
+                if (image_pos == 0) {
+                    ImageView img_profile = (ImageView) findViewById(R.id.img_1);
+                    img_profile.setImageBitmap(myBitmap);
+                } else if (image_pos == 1) {
+                    ImageView img_profile = (ImageView) findViewById(R.id.img_2);
+                    img_profile.setImageBitmap(myBitmap);
+                } else if (image_pos == 2) {
+                    ImageView img_profile = (ImageView) findViewById(R.id.img_3);
+                    img_profile.setImageBitmap(myBitmap);
+                }
             }
         }
     }
@@ -700,59 +740,65 @@ public class EventsScreen extends AppCompatActivity implements View.OnClickListe
         } else if (constant.isEmptyString(et_website.getText().toString())) {
             Toast.makeText(EventsScreen.this, "Enter website", Toast.LENGTH_LONG).show();
         } else {
-            try {
-                JSONObject jsonObj = new JSONObject();
-                jsonObj.put("createdBy", 1);
-                jsonObj.put("updatedBy", 1);
-                jsonObj.put("createdAt", "2018-09-19T18:30:00Z");
-                jsonObj.put("updatedAt", "2018-09-19T18:30:00Z");
-                jsonObj.put("userId", "2");
-                jsonObj.put("interestName", et_name.getText().toString());
-                jsonObj.put("descriptionAdv", et_desc.getText().toString());
-                jsonObj.put("locationName", address);
-                jsonObj.put("locationPinId", "12345");
-                jsonObj.put("loc_lat", lat);
-                jsonObj.put("loc_long", lng);
-                jsonObj.put("postingCity", "12345");
-                jsonObj.put("postStatus", "1");
-                jsonObj.put("broadcastId", "1");
-                jsonObj.put("categoryId", categoryId);
-                jsonObj.put("categoryName", categoryName);
-                jsonObj.put("isbroadcasting", "1");
-                jsonObj.put("seenByCount", "1");
-                jsonObj.put("endDate", "2018-09-19T18:30:00Z");
+            if (et_mobile.getText().toString().length() <= 9) {
+                Toast.makeText(EventsScreen.this, "Mobile Number should be 10 digits", Toast.LENGTH_LONG).show();
+            } else if (!constant.isValidEmail(et_email.getText().toString())) {
+                Toast.makeText(EventsScreen.this, "Enter valid email", Toast.LENGTH_LONG).show();
+            }else {
+                try {
+                    JSONObject jsonObj = new JSONObject();
+                    jsonObj.put("createdBy", 1);
+                    jsonObj.put("updatedBy", 1);
+                    jsonObj.put("createdAt", "2018-09-19T18:30:00Z");
+                    jsonObj.put("updatedAt", "2018-09-19T18:30:00Z");
+                    jsonObj.put("userId", "2");
+                    jsonObj.put("interestName", et_name.getText().toString());
+                    jsonObj.put("descriptionAdv", et_desc.getText().toString());
+                    jsonObj.put("locationName", address);
+                    jsonObj.put("locationPinId", "12345");
+                    jsonObj.put("loc_lat", String.valueOf(lat));
+                    jsonObj.put("loc_long", String.valueOf(lng));
+                    jsonObj.put("postingCity", "12345");
+                    jsonObj.put("postStatus", "1");
+                    jsonObj.put("broadcastId", "1");
+                    jsonObj.put("categoryId", categoryId);
+                    jsonObj.put("categoryName", categoryName);
+                    jsonObj.put("isbroadcasting", "1");
+                    jsonObj.put("seenByCount", "1");
+                    jsonObj.put("endDate", "2018-09-19T18:30:00Z");
 
-                JSONObject jsonAdd = new JSONObject();
-                jsonAdd.put("categoryId", 100011);
-                jsonAdd.put("categoryName", "MobileNumber");
-                jsonAdd.put("attributeName", et_mobile.getText().toString());
+                    JSONObject jsonAdd = new JSONObject();
+                    jsonAdd.put("categoryId", 100011);
+                    jsonAdd.put("categoryName", "MobileNumber");
+                    jsonAdd.put("attributeName", et_mobile.getText().toString());
 
-                JSONObject jsonAdd2 = new JSONObject();
-                jsonAdd2.put("categoryId", 100011);
-                jsonAdd2.put("categoryName", "Email");
-                jsonAdd2.put("attributeName", et_email.getText().toString());
+                    JSONObject jsonAdd2 = new JSONObject();
+                    jsonAdd2.put("categoryId", 100011);
+                    jsonAdd2.put("categoryName", "Email");
+                    jsonAdd2.put("attributeName", et_email.getText().toString());
 
-                JSONObject jsonAdd3 = new JSONObject();
-                jsonAdd3.put("categoryId", 100011);
-                jsonAdd3.put("categoryName", "Website");
-                jsonAdd3.put("attributeName", et_website.getText().toString());
+                    JSONObject jsonAdd3 = new JSONObject();
+                    jsonAdd3.put("categoryId", 100011);
+                    jsonAdd3.put("categoryName", "Website");
+                    jsonAdd3.put("attributeName", et_website.getText().toString());
 
-                JSONArray jsonArray = new JSONArray();
-                jsonArray.put(jsonAdd);
-                jsonArray.put(jsonAdd2);
-                jsonArray.put(jsonAdd3);
+                    JSONArray jsonArray = new JSONArray();
+                    jsonArray.put(jsonAdd);
+                    jsonArray.put(jsonAdd2);
+                    jsonArray.put(jsonAdd3);
 
-                jsonObj.put("attributes", jsonArray);
-                jsonObj.put("isevent", true);
+                    jsonObj.put("attributes", jsonArray);
+                    jsonObj.put("isevent", true);
 
 
-                Log.e("jsonObj", "#" + jsonObj.toString());
+                    Log.e("jsonObj", "#" + jsonObj.toString());
 
 //                uploaddata(jsonObj);
 
-                new uplaodmultiprtdata(jsonObj).execute();
-            } catch (Exception e) {
+                    new uplaodmultiprtdata(jsonObj).execute();
+                } catch (Exception e) {
 
+                }
             }
         }
     }
@@ -760,6 +806,7 @@ public class EventsScreen extends AppCompatActivity implements View.OnClickListe
     private class uplaodmultiprtdata extends AsyncTask<Void, Integer, String> {
         ProgressDialog mProgressDialog;
         JSONObject jsonObj;
+
         public uplaodmultiprtdata(JSONObject jsonObj) {
             this.jsonObj = jsonObj;
         }
@@ -820,20 +867,36 @@ public class EventsScreen extends AppCompatActivity implements View.OnClickListe
                         });
 
                 try {
-                    if (filepath != null) {
+                    if (files.size() >= 1) {
+                        File file1 = new File(files.get(0));
+                        FileInputStream fileInputStream = new FileInputStream(file1);
+                        entity.addPart("Imagefile1", new InputStreamBody(fileInputStream, "image/jpeg", "file_name.jpg"));
+
+                        File file2 = new File(files.get(1));
+                        FileInputStream fileInputStream2 = new FileInputStream(file2);
+                        entity.addPart("Imagefile2", new InputStreamBody(fileInputStream2, "image/jpeg", "file_name.jpg"));
+//
+//                        File file3 = new File(files.get(2));
+//                        FileInputStream fileInputStream3 = new FileInputStream(file3);
+//                        entity.addPart("Imagefile3", new InputStreamBody(fileInputStream3, "image/jpeg", "file_name.jpg"));
+                    }
+
+                    /*if (filepath != null) {
                         File sourceFile = new File(filepath);
 //                        entity.addPart("profile_image", new FileBody(sourceFile));
                         Log.e("sourceFile","#"+sourceFile);
 
                         FileInputStream fileInputStream = new FileInputStream(sourceFile);
                         entity.addPart("Imagefile1", new InputStreamBody(fileInputStream, "image/jpeg", "file_name.jpg"));
-                    }
-                    entity.addPart("createbeanmodel", new StringBody(jsonObj.toString()));
+                    }*/
+
 
                 } catch (Exception e) {
                     // TODO: handle exception
                     e.printStackTrace();
                 }
+
+                entity.addPart("createbeanmodel", new StringBody(jsonObj.toString()));
 
                 totalSize = entity.getContentLength();
                 httppost.setEntity(entity);
@@ -864,12 +927,40 @@ public class EventsScreen extends AppCompatActivity implements View.OnClickListe
         protected void onPostExecute(String result) {
             // showing the server response in an alert dialog
             //showAlert(result);
+            files.clear();
 
             super.onPostExecute(result);
 
             if (mProgressDialog != null) {
                 mProgressDialog.dismiss();
             }
+            postresponse(result);
+
+        }
+    }
+
+    private void postresponse(String result) {
+        delete_temps();
+        Log.e("result", result);
+        try {
+            JSONObject jsonObject = new JSONObject(result);
+//            Log.e("jsonArray","#"+jsonObject.toString());
+
+            for (int i = 0; i < jsonObject.length(); i++) {
+//                JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                String id = jsonObject.getString("id");
+                String categoryid = jsonObject.getString("categoryId");
+                String category_name = jsonObject.getString("categoryName");
+
+                Log.e("category_name>>>>>", category_name);
+                if (!constant.isEmptyString(id)) {
+                    Toast.makeText(EventsScreen.this, "Success", Toast.LENGTH_LONG).show();
+                }
+            }
+        } catch (Exception e) {
+            Log.e("error>>>>>", e.getMessage());
+            Toast.makeText(EventsScreen.this, "Error", Toast.LENGTH_LONG).show();
         }
 
     }
@@ -919,6 +1010,21 @@ public class EventsScreen extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
+
+    }
+
+    public void delete_temps() {
+        try {
+            File dir = new File(Environment.getExternalStorageDirectory() + "/Pictures/Sharent_temp");
+            if (dir.isDirectory()) {
+                String[] children = dir.list();
+                for (int i = 0; i < children.length; i++) {
+                    new File(dir, children[i]).delete();
+                }
+            }
+        } catch (Exception e) {
+
+        }
 
     }
 }
