@@ -21,5 +21,12 @@
         <item name="android:layout_weight">1</item>
         <item name="android:background">#015796</item>
     </style>
+    <style name="AppTheme.NoActionBar">
+
+        <item name="windowActionBar">false</item>
+
+        <item name="windowNoTitle">true</item>
+
+    </style>
 
 </resources>

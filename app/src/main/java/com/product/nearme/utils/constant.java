@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 
@@ -35,6 +36,39 @@ public class constant {
 
         return false;
     }
+
+    public static boolean haveLocationPermissions(FragmentActivity activity) {
+        int permissionCheck = ContextCompat.checkSelfPermission(activity,
+                Manifest.permission.ACCESS_FINE_LOCATION);
+
+        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static void requestLocationPermission(Activity caller) {
+        List<String> permissionList = new ArrayList<String>();
+
+        if (ContextCompat.checkSelfPermission(caller, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            permissionList.add(Manifest.permission.ACCESS_FINE_LOCATION);
+
+        }
+
+        if (permissionList.size() > 0) {
+            String[] permissionArray = new String[permissionList.size()];
+
+            for (int i = 0; i < permissionList.size(); i++) {
+                permissionArray[i] = permissionList.get(i);
+            }
+
+            ActivityCompat.requestPermissions(caller,
+                    permissionArray,
+                    100);
+        }
+    }
+
     public static void requestwritePermission(Activity caller) {
         List<String> permissionList = new ArrayList<String>();
 
@@ -85,4 +119,5 @@ public class constant {
                     .matches();
         }
     }
+
 }
