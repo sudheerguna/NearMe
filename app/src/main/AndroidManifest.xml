@@ -48,6 +48,7 @@
             android:name=".Home_Activity"
             android:configChanges="orientation"
             android:label="@string/app_name"
+            android:launchMode="singleInstance"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity

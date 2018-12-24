@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
                 // Start your app main activity
                 if(!constant.isEmptyString(mSharedPref.getString(constant.Login_Success))){
                     if(mSharedPref.getString(constant.Login_Success).equals("1")){
-                        Intent i = new Intent(MainActivity.this, LoginActivity.class);
+                        Intent i = new Intent(MainActivity.this, Home_Activity.class);
                         startActivity(i);
                     }else{
                         Intent i = new Intent(MainActivity.this, LoginActivity.class);

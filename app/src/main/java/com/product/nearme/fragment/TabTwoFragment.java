@@ -1,16 +1,7 @@
 package com.product.nearme.fragment;
 
-import android.Manifest;
-import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -21,62 +12,36 @@ import android.os.Looper;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
-import com.android.volley.Request;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.gson.Gson;
 import com.product.nearme.EventsScreen;
 import com.product.nearme.R;
-import com.product.nearme.models.Nearby;
-import com.product.nearme.utils.AppConstantsM;
 import com.product.nearme.utils.constant;
-import com.product.nearme.volley.AppController;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
-public class TabOneFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks,
+public class TabTwoFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
     View rootView;
@@ -91,12 +56,12 @@ public class TabOneFragment extends Fragment implements GoogleApiClient.Connecti
     ProgressDialog progressDialog;
     ProgressBar progressbar;
     double double_lat,double_lng;
-    private Boolean isStarted = false;
+    private Boolean isStarted = true;
     private Boolean isVisible = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.tabone_fragment, container, false);
+        rootView = inflater.inflate(R.layout.tab_twofragment, container, false);
 
         savedInstance = savedInstanceState;
         return rootView;
@@ -198,122 +163,11 @@ public class TabOneFragment extends Fragment implements GoogleApiClient.Connecti
                 String city = addresses.get(0).getLocality();
                 Log.e("city", "#" + city);
 
-                getrequestbasedoncity(city);
+//                getrequestbasedoncity(city);
             }
         } catch (Exception e) {
 
         }
-    }
-
-    private void getrequestbasedoncity(String city) {
-        progressbar.setVisibility(View.VISIBLE);
-
-        String url = "http://ec2-13-56-34-157.us-west-1.compute.amazonaws.com:8088/wyat-work/api/pbc/v1/pbcast/location?location=bengalore";
-
-        StringRequest sr = new StringRequest(Request.Method.GET, url, new com.android.volley.Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-//                Log.e("getcity»»»>", "#" + response);
-                Cityresponse(response);
-                progressbar.setVisibility(View.GONE);
-            }
-        }, new com.android.volley.Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError response) {
-                progressbar.setVisibility(View.GONE);
-                Log.e(" response error is", "#" + response.getMessage());
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> jsonObject = new HashMap<String, String>();
-
-                return jsonObject;
-            }
-        };
-//        queue.add(sr);
-        AppController.getInstance().addToRequestQueue(sr, "string_req", getActivity());
-    }
-
-    private void Cityresponse(String response) {
-        Log.e("getcity»»»>", "#" + response);
-        try {
-            JSONArray jsonArray = new JSONArray(response);
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-
-                String id = jsonObject.getString("id");
-                String categoryid = jsonObject.getString("categoryId");
-                String category_name = jsonObject.getString("categoryName");
-
-                JSONObject user_json = jsonObject.getJSONObject("user");
-                String registrationType = user_json.getString("registrationType");
-
-                Log.e("registrationType»»»>", "#" + registrationType);
-
-
-            }
-            loadmarkers();
-        } catch (Exception e) {
-
-        }
-    }
-
-    private void loadmarkers() {
-        Marker marker1 = null;
-        /*try{
-            marker1.remove();
-        }catch (Exception e){
-
-        }*/
-
-        View marker = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.info_window_layout, null);
-        TextView servicename = (TextView) marker.findViewById(R.id.servicename);
-        ImageView image = (ImageView) marker.findViewById(R.id.serviceimage);
-        image.setImageResource(R.mipmap.markernew);
-        servicename.setText("");
-
-        ArrayList<String> al = new ArrayList<>();
-        al.clear();
-        al.add("12.9592");
-        al.add("12.9971");
-        al.add("12.9177");
-
-        ArrayList<String> al2 = new ArrayList<>();
-        al2.clear();
-        al2.add("77.6974");
-        al2.add("77.6692");
-        al2.add("77.6233");
-
-        for(int i=0;i<al.size();i++){
-             marker1 = googleMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(Double.parseDouble(al.get(i)), Double.parseDouble(al2.get(i))))
-                    .title("Maps")
-                    .snippet("Description")
-                    .icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(getActivity(), marker))));
-        }
-
-
-//        CameraPosition cameraPosition = new CameraPosition.Builder().target(
-//                new LatLng(Double.parseDouble("13.5560"), Double.parseDouble("78.5010"))).zoom(8.50f).build();
-//        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-        // Drawing polyline in the Google Map for the i-th route
-
-    }
-
-    public static Bitmap createDrawableFromView(Context context, View view) {
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        view.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        view.measure(displayMetrics.widthPixels, displayMetrics.heightPixels);
-        view.layout(0, 0, displayMetrics.widthPixels, displayMetrics.heightPixels);
-        view.buildDrawingCache();
-        Bitmap bitmap = Bitmap.createBitmap(view.getMeasuredWidth(), view.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
-
-        Canvas canvas = new Canvas(bitmap);
-        view.draw(canvas);
-
-        return bitmap;
     }
 
     private void getLocationrequest() {
@@ -360,7 +214,7 @@ public class TabOneFragment extends Fragment implements GoogleApiClient.Connecti
     public void onResume() {
         super.onResume();
         if(isStarted = false){
-//            init();
+            init();
         }
     }
 
@@ -402,8 +256,11 @@ public class TabOneFragment extends Fragment implements GoogleApiClient.Connecti
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        Log.e("isVisibleToUser1","#"+isVisibleToUser);
         isVisible = isVisibleToUser;
+
+        Log.e("isVisibleToUser2","#"+isVisible);
+        Log.e("isStarted2","#"+isStarted);
+
         if (isVisible) {
             init();
         }
@@ -413,7 +270,9 @@ public class TabOneFragment extends Fragment implements GoogleApiClient.Connecti
     public void onStart() {
         super.onStart();
         isStarted = true;
+
         if (isVisible && isStarted) {
+            Log.e("valid","#");
             init();
         }
     }

@@ -9,7 +9,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 
+import com.product.nearme.fragment.TabFourFragment;
 import com.product.nearme.fragment.TabOneFragment;
+import com.product.nearme.fragment.TabThreeFragment;
+import com.product.nearme.fragment.TabTwoFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,10 +45,10 @@ public class Home_Activity extends AppCompatActivity {
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFrag(new TabOneFragment(), "ONE");
-        adapter.addFrag(new TabOneFragment(), "TWO");
-        adapter.addFrag(new TabOneFragment(), "THREE");
-        adapter.addFrag(new TabOneFragment(), "FOUR");
+        adapter.addFrag(new TabOneFragment(), "PEOPLE");
+        adapter.addFrag(new TabTwoFragment(), "EVENTS");
+        adapter.addFrag(new TabThreeFragment(), "BUSINESS");
+        adapter.addFrag(new TabFourFragment(), "SPORTS");
         viewPager.setAdapter(adapter);
     }
 
