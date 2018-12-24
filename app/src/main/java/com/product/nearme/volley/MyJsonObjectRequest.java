@@ -32,7 +32,7 @@ public  class MyJsonObjectRequest extends JsonObjectRequest {
     public Map<String, String> getHeaders() throws AuthFailureError {
         HashMap<String, String> headers = new HashMap<String, String>();
 //        headers.put("X-XFERS-APP-API-KEY", "v-zZLm-VA1i-ppWVvrL53GsjmxCh8osuiy4ZtrAVYqs");
-//        headers.put("Content-Type", "application/json");
+        headers.put("Content-Type", "application/json");
         return headers;
     }
 }
