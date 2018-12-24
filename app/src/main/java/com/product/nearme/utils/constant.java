@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class constant {
+    public static String tag_json_obj = "jobj_req", tag_json_arry = "jarray_req", tag_string_req = "string_req";
+    public static final String Login_Success = "Login_Success";
+
     public static boolean isEmptyString(String text) {
         return (text == null || text.trim().equals("null") || text.trim().length() <= 0);
     }
