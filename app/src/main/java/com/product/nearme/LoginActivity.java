@@ -78,6 +78,7 @@ public class LoginActivity extends AppCompatActivity {
     private void callLogin(final String Email_st, final String password_st) {
         final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this);
         progressDialog.show();
+        progressDialog.setMessage("Loading");
         progressDialog.setCancelable(false);
 
         String url = "http://ec2-13-56-34-157.us-west-1.compute.amazonaws.com:8088/wyat-work/api/iam/v1/loginUser/login";
@@ -103,6 +104,7 @@ public class LoginActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(LoginActivity.this, "Please try again", Toast.LENGTH_LONG).show();
                         if (progressDialog.isShowing())
                             progressDialog.dismiss();
                     }

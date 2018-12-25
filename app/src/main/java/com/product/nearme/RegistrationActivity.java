@@ -291,6 +291,7 @@ public class RegistrationActivity extends AppCompatActivity implements AdapterVi
     private void doregister() {
         final ProgressDialog progressDialog = new ProgressDialog(RegistrationActivity.this);
         progressDialog.show();
+        progressDialog.setMessage("Loading");
         progressDialog.setCancelable(false);
 
         String url = "http://ec2-13-56-34-157.us-west-1.compute.amazonaws.com:8088/wyat-work/api/iam/v1/user/register";
@@ -369,6 +370,7 @@ public class RegistrationActivity extends AppCompatActivity implements AdapterVi
     private void getspinnerdata() {
         final ProgressDialog progressDialog = new ProgressDialog(RegistrationActivity.this);
         progressDialog.show();
+        progressDialog.setMessage("Loading");
         progressDialog.setCancelable(false);
 
         String url = "http://ec2-13-56-34-157.us-west-1.compute.amazonaws.com:8088/wyat-work/api/pbc/v1/pbcast/getallcatageoryLookup";
@@ -384,6 +386,7 @@ public class RegistrationActivity extends AppCompatActivity implements AdapterVi
             @Override
             public void onErrorResponse(VolleyError response) {
                 progressDialog.dismiss();
+                Toast.makeText(RegistrationActivity.this, "Please try again", Toast.LENGTH_LONG).show();
                 Log.e(" response error is", "#" + response.getMessage());
             }
         }) {
