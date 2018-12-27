@@ -32,8 +32,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
+import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.google.android.gms.common.ConnectionResult;
@@ -61,17 +63,24 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.product.nearme.EventsScreen;
+import com.product.nearme.LoginActivity;
 import com.product.nearme.R;
+import com.product.nearme.models.Advertisements;
 import com.product.nearme.models.Nearby;
 import com.product.nearme.utils.AppConstantsM;
+import com.product.nearme.utils.CustomInfoWindowGoogleMap;
+import com.product.nearme.utils.InfoWindowData;
+import com.product.nearme.utils.SharedPref;
 import com.product.nearme.utils.constant;
 import com.product.nearme.volley.AppController;
+import com.product.nearme.volley.MyJsonObjectRequest;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -90,9 +99,10 @@ public class TabOneFragment extends Fragment implements GoogleApiClient.Connecti
     Boolean checklatlng = false;
     ProgressDialog progressDialog;
     ProgressBar progressbar;
-    double double_lat,double_lng;
+    double double_lat, double_lng;
     private Boolean isStarted = false;
     private Boolean isVisible = false;
+    SharedPref mSharedPref;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -103,6 +113,7 @@ public class TabOneFragment extends Fragment implements GoogleApiClient.Connecti
     }
 
     private void init() {
+        mSharedPref = new SharedPref(getActivity());
         progressbar = rootView.findViewById(R.id.progressbar);
         progressbar.setVisibility(View.GONE);
         CheckPermissions();
@@ -170,7 +181,7 @@ public class TabOneFragment extends Fragment implements GoogleApiClient.Connecti
 
                 mFusedLocationClient.requestLocationUpdates(locationRequest, mLocationCallback, Looper.myLooper());
 
-                try{
+                try {
                     googleMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
                         @Override
                         public void onCameraChange(CameraPosition cameraPosition) {
@@ -179,7 +190,7 @@ public class TabOneFragment extends Fragment implements GoogleApiClient.Connecti
                             getaddressfromlatlong(cameraPosition.target.latitude, cameraPosition.target.longitude);
                         }
                     });
-                }catch (Exception e){
+                } catch (Exception e) {
 
                 }
             }
@@ -208,8 +219,9 @@ public class TabOneFragment extends Fragment implements GoogleApiClient.Connecti
     private void getrequestbasedoncity(String city) {
         progressbar.setVisibility(View.VISIBLE);
 
-        String url = "http://ec2-13-56-34-157.us-west-1.compute.amazonaws.com:8088/wyat-work/api/pbc/v1/pbcast/location?location=bengalore";
-
+//        String url = "http://ec2-13-56-34-157.us-west-1.compute.amazonaws.com:8088/wyat-work/api/pbc/v1/pbcast/location?location=bengalore";
+//        String url = "http://ec2-13-56-34-157.us-west-1.compute.amazonaws.com:8088/wyat-work/api/pbc/v1/pbcast/showmyads?userId=" + mSharedPref.getString(constant.UserId);
+        String url = "http://ec2-13-56-34-157.us-west-1.compute.amazonaws.com:8088/wyat-work/api/pbc/v1/pbcast/showmyads?userId=2";
         StringRequest sr = new StringRequest(Request.Method.GET, url, new com.android.volley.Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -236,8 +248,47 @@ public class TabOneFragment extends Fragment implements GoogleApiClient.Connecti
     }
 
     private void Cityresponse(String response) {
-        Log.e("getcity»»»>", "#" + response);
-        try {
+//        Log.e("getcity»»»>", "#" + response);
+        Gson gson = new Gson();
+        Advertisements sResult = gson.fromJson(response, Advertisements.class);
+
+        getJsonKey_value(response);
+        Log.e("getStatus", "#" + sResult.getStatus().toString());
+//        Log.e("getCategoryName", "#" + sResult.getAdvertisements().get(0).getCategoryName().toString());
+
+        View marker = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.info_window_layout, null);
+        final TextView servicename = (TextView) marker.findViewById(R.id.servicename);
+        ImageView image = (ImageView) marker.findViewById(R.id.serviceimage);
+        image.setImageResource(R.mipmap.markernew);
+        servicename.setVisibility(View.GONE);
+
+        try{
+            if (sResult != null) {
+                Log.e("size", "#" + sResult.getAdvertisements().size());
+                String UserId = sResult.getUserId().toString();
+                for (int i = 0; i < sResult.getAdvertisements().size(); i++) {
+                    String lat = sResult.getAdvertisements().get(i).getLocLat();
+                    String lng = sResult.getAdvertisements().get(i).getLocLong();
+                    int userId = sResult.getAdvertisements().get(i).getUserId();
+                    String categoryName = sResult.getAdvertisements().get(i).getCategoryName();
+                    String CategoryId = sResult.getAdvertisements().get(i).getCategoryId();
+
+                    String d_lat = sResult.getAdvertisements().get(i).getUser().getLocLat();
+                    String d_lng = sResult.getAdvertisements().get(i).getUser().getLocLang();
+                    String user = sResult.getAdvertisements().get(i).getUser().getUserName();
+                    String locationName = sResult.getAdvertisements().get(i).getLocationName();
+
+                    Log.e("lat", "#" + lat);
+                    Log.e("d_lat", "#" + d_lat);
+                    load_marker(lat, lng, userId, categoryName, CategoryId, user, locationName, marker);
+//                load_marker(d_lat,d_lng,marker);
+                }
+            }
+        }catch (Exception e){
+
+        }
+
+        /*try {
             JSONArray jsonArray = new JSONArray(response);
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -245,22 +296,56 @@ public class TabOneFragment extends Fragment implements GoogleApiClient.Connecti
                 String id = jsonObject.getString("id");
                 String categoryid = jsonObject.getString("categoryId");
                 String category_name = jsonObject.getString("categoryName");
+                String loc_lat = jsonObject.getString("loc_lat");
+                String loc_long = jsonObject.getString("loc_long");
 
                 JSONObject user_json = jsonObject.getJSONObject("user");
                 String registrationType = user_json.getString("registrationType");
 
                 Log.e("registrationType»»»>", "#" + registrationType);
-
-
             }
             loadmarkers();
+        } catch (Exception e) {
+
+        }*/
+    }
+
+    private void getJsonKey_value(String response){
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+            Iterator it = jsonObject.keys();
+            while (it.hasNext()) {
+                String key = (String) it.next();
+                String value = jsonObject.getString(key);
+                Log.e("Key:Value", "" + key );
+            }
         } catch (Exception e) {
 
         }
     }
 
+    private void load_marker(String lat, String lng, int userId, String categoryName, String CategoryId, String user, String locationName, View marker) {
+        double d_lat = Double.parseDouble(lat);
+        double d_lng = Double.parseDouble(lng);
+
+        Marker marker1 = googleMap.addMarker(new MarkerOptions()
+                .position(new LatLng(d_lat, d_lng))
+                .title(user)
+                .snippet(locationName)
+                .icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(getActivity(), marker))));
+
+        googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                Log.e("marker", "#" + marker.getTitle());
+            }
+        });
+
+    }
+
     private void loadmarkers() {
         Marker marker1 = null;
+        Marker m = null;
         /*try{
             marker1.remove();
         }catch (Exception e){
@@ -268,12 +353,12 @@ public class TabOneFragment extends Fragment implements GoogleApiClient.Connecti
         }*/
 
         View marker = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.info_window_layout, null);
-        TextView servicename = (TextView) marker.findViewById(R.id.servicename);
+        final TextView servicename = (TextView) marker.findViewById(R.id.servicename);
         ImageView image = (ImageView) marker.findViewById(R.id.serviceimage);
         image.setImageResource(R.mipmap.markernew);
-        servicename.setText("");
+        servicename.setVisibility(View.GONE);
 
-        ArrayList<String> al = new ArrayList<>();
+        final ArrayList<String> al = new ArrayList<>();
         al.clear();
         al.add("12.9592");
         al.add("12.9971");
@@ -285,15 +370,51 @@ public class TabOneFragment extends Fragment implements GoogleApiClient.Connecti
         al2.add("77.6692");
         al2.add("77.6233");
 
-        for(int i=0;i<al.size();i++){
-             marker1 = googleMap.addMarker(new MarkerOptions()
+        InfoWindowData info = new InfoWindowData();
+
+        MarkerOptions markerOptions = new MarkerOptions();
+
+        for (int i = 0; i < al.size(); i++) {
+            marker1 = googleMap.addMarker(new MarkerOptions()
                     .position(new LatLng(Double.parseDouble(al.get(i)), Double.parseDouble(al2.get(i))))
                     .title("Maps")
                     .snippet("Description")
                     .icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(getActivity(), marker))));
+
+            /*markerOptions.position(new LatLng(Double.parseDouble(al.get(i)), Double.parseDouble(al2.get(i))))
+//                    .title("Maps")
+//                    .snippet("Description")
+                    .icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(getActivity(), marker)));
+
+            if(i==1){
+                info.setImage("snowqualmie");
+                info.setHotel("marathalli");
+                info.setFood("Whitefield");
+                info.setTransport("Silkboard");
+            }else{
+                info.setImage("snow");
+                info.setHotel("marath");
+                info.setFood("White");
+                info.setTransport("Silk");
+            }
+
+            CustomInfoWindowGoogleMap customInfoWindow = new CustomInfoWindowGoogleMap(getActivity());
+            googleMap.setInfoWindowAdapter(customInfoWindow);
+
+            m = googleMap.addMarker(markerOptions);
+            m.setTag(info);
+            m.hideInfoWindow();*/
         }
 
 
+        googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                Log.e("position", "#" + marker.getId());
+                servicename.setText(marker.getTitle());
+                return false;
+            }
+        });
 //        CameraPosition cameraPosition = new CameraPosition.Builder().target(
 //                new LatLng(Double.parseDouble("13.5560"), Double.parseDouble("78.5010"))).zoom(8.50f).build();
 //        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
@@ -359,9 +480,7 @@ public class TabOneFragment extends Fragment implements GoogleApiClient.Connecti
     @Override
     public void onResume() {
         super.onResume();
-        if(isStarted = false){
-//            init();
-        }
+        init();
     }
 
     @Override
@@ -402,9 +521,9 @@ public class TabOneFragment extends Fragment implements GoogleApiClient.Connecti
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        Log.e("isVisibleToUser1","#"+isVisibleToUser);
+        Log.e("isVisibleToUser1", "#" + isVisibleToUser);
         isVisible = isVisibleToUser;
-        if (isVisible) {
+        if (isVisible && isStarted) {
             init();
         }
     }

@@ -13,6 +13,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.product.nearme.cview.NeoGramMEditText;
+import com.product.nearme.slidemenu.SlideHomeActivity;
 import com.product.nearme.utils.SharedPref;
 import com.product.nearme.utils.constant;
 import com.product.nearme.volley.AppController;
@@ -123,6 +124,9 @@ public class LoginActivity extends AppCompatActivity {
             } else {
                 mSharedPref.putString(constant.Login_Success,"1");
 
+                mSharedPref.putString(constant.UserId,response.getString("id"));
+                mSharedPref.putString(constant.UserName,response.getString("userName"));
+
                 String id = response.getString("id");
                 String userName = response.getString("userName");
                 String firstName = response.getString("firstName");
@@ -146,7 +150,7 @@ public class LoginActivity extends AppCompatActivity {
                 String accountLocked = response.getString("accountLocked");
                 String credentialsExpired = response.getString("credentialsExpired");
 
-                startActivity(new Intent(LoginActivity.this,Home_Activity.class));
+                startActivity(new Intent(LoginActivity.this,SlideHomeActivity.class));
                 finish();
             }
 

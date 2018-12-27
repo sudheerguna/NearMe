@@ -5,5 +5,19 @@
     <string name="preparing_card">preparing_card</string>
     <string name="no_storage_card">no_storage_card</string>
     <string name="not_enough_space">not_enough_space</string>
+    <string name="drawer_open">Open</string>
+    <string name="drawer_close">Close</string>
+
+    <string name="home">Home</string>
+    <string name="profile_edit">Profile</string>
+    <string name="logout">Logout</string>
+
+    <string-array name="nav_drawer_labels_buyer">
+        <item>@string/home</item>
+        <item>@string/profile_edit</item>
+        <!--<item>@string/appointmentfixing</item>-->
+        <!--<item>@string/cancel_appointment</item>-->
+        <item>@string/logout</item>
+    </string-array>
 
 </resources>

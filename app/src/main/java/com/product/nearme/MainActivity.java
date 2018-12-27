@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.product.nearme.slidemenu.SlideHomeActivity;
 import com.product.nearme.utils.SharedPref;
 import com.product.nearme.utils.constant;
 
@@ -34,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
                 // Start your app main activity
                 if(!constant.isEmptyString(mSharedPref.getString(constant.Login_Success))){
                     if(mSharedPref.getString(constant.Login_Success).equals("1")){
-                        Intent i = new Intent(MainActivity.this, Home_Activity.class);
+                        Intent i = new Intent(MainActivity.this, SlideHomeActivity.class);
                         startActivity(i);
                     }else{
                         Intent i = new Intent(MainActivity.this, LoginActivity.class);
