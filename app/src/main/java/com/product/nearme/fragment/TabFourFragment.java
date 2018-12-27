@@ -64,12 +64,12 @@ public class TabFourFragment extends Fragment implements GoogleApiClient.Connect
         rootView = inflater.inflate(R.layout.tab_threefragment, container, false);
 
         savedInstance = savedInstanceState;
+        init();
         return rootView;
     }
 
     private void init() {
-        progressbar = rootView.findViewById(R.id.progressbar);
-        progressbar.setVisibility(View.GONE);
+        rootView.findViewById(R.id.progressbar).setVisibility(View.GONE);
         CheckPermissions();
 
         rootView.findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
@@ -214,7 +214,7 @@ public class TabFourFragment extends Fragment implements GoogleApiClient.Connect
     public void onResume() {
         super.onResume();
         if (isStarted = false) {
-            init();
+//            init();
         }
     }
 
@@ -258,11 +258,11 @@ public class TabFourFragment extends Fragment implements GoogleApiClient.Connect
         super.setUserVisibleHint(isVisibleToUser);
         isVisible = isVisibleToUser;
 
-        Log.e("isVisibleToUser3", "#" + isVisible);
-        Log.e("isStarted3", "#" + isStarted);
+        Log.e("isVisibleToUser4", "#" + isVisible);
+        Log.e("isStarted4", "#" + isStarted);
 
         if (isVisible) {
-            init();
+//            init();
         }
     }
 
@@ -273,7 +273,7 @@ public class TabFourFragment extends Fragment implements GoogleApiClient.Connect
 
         if (isVisible && isStarted) {
             Log.e("valid", "#");
-            init();
+//            init();
         }
     }
 }

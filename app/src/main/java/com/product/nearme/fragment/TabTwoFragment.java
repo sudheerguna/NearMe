@@ -64,12 +64,12 @@ public class TabTwoFragment extends Fragment implements GoogleApiClient.Connecti
         rootView = inflater.inflate(R.layout.tab_twofragment, container, false);
 
         savedInstance = savedInstanceState;
+
         return rootView;
     }
 
     private void init() {
-        progressbar = rootView.findViewById(R.id.progressbar);
-        progressbar.setVisibility(View.GONE);
+        rootView.findViewById(R.id.progressbar).setVisibility(View.GONE);
         CheckPermissions();
 
         rootView.findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {

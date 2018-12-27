@@ -62,13 +62,16 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
+import com.product.nearme.CommentsActivity;
 import com.product.nearme.EventsScreen;
 import com.product.nearme.LoginActivity;
 import com.product.nearme.R;
+import com.product.nearme.models.Advertisement;
 import com.product.nearme.models.Advertisements;
 import com.product.nearme.models.Nearby;
 import com.product.nearme.utils.AppConstantsM;
 import com.product.nearme.utils.CustomInfoWindowGoogleMap;
+import com.product.nearme.utils.CustomInfoWindowGoogleMap2;
 import com.product.nearme.utils.InfoWindowData;
 import com.product.nearme.utils.SharedPref;
 import com.product.nearme.utils.constant;
@@ -103,6 +106,9 @@ public class TabOneFragment extends Fragment implements GoogleApiClient.Connecti
     private Boolean isStarted = false;
     private Boolean isVisible = false;
     SharedPref mSharedPref;
+    private HashMap<Marker, Integer> mHashMap = new HashMap<Marker, Integer>();
+    Marker mainmarker;
+    String cityname;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -114,7 +120,7 @@ public class TabOneFragment extends Fragment implements GoogleApiClient.Connecti
 
     private void init() {
         mSharedPref = new SharedPref(getActivity());
-        progressbar = rootView.findViewById(R.id.progressbar);
+        progressbar = (ProgressBar) rootView.findViewById(R.id.progressbar);
         progressbar.setVisibility(View.GONE);
         CheckPermissions();
 
@@ -159,18 +165,25 @@ public class TabOneFragment extends Fragment implements GoogleApiClient.Connecti
                                 Location location = locationList.get(locationList.size() - 1);
                                 Log.e("MapsActivity", "Location: " + location.getLatitude() + " " + location.getLongitude());
                                 LatLng mLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                                googleMap.addMarker(new MarkerOptions().position(mLatLng).title("Marker Title").snippet("Marker Description"));
+                                getaddress(location.getLatitude(),location.getLongitude());
+
+                               /* googleMap.addMarker(new MarkerOptions().position(mLatLng).title("Marker Title").snippet("Marker Description")
+                                .icon(BitmapDescriptorFactory
+                                        .defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
 
                                 CameraPosition cameraPosition = new CameraPosition.Builder().target(mLatLng).zoom(12).build();
 //                                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-                                googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                                googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));*/
 
                                 // For showing a move to my location button
-                                googleMap.setMyLocationEnabled(true);
+
+//                                mainmarker.showInfoWindow();
 
                                 if (checklatlng = false) {
+
                                     checklatlng = true;
-                                    getaddressfromlatlong(location.getLatitude(), location.getLongitude());
+
+//                                    getaddressfromlatlong(location.getLatitude(), location.getLongitude(), 0);
                                 }
                             }
                         } catch (Exception e) {
@@ -182,12 +195,19 @@ public class TabOneFragment extends Fragment implements GoogleApiClient.Connecti
                 mFusedLocationClient.requestLocationUpdates(locationRequest, mLocationCallback, Looper.myLooper());
 
                 try {
+                    googleMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
+                        @Override
+                        public void onCameraIdle() {
+                            Log.e("latitude", "#" + googleMap.getCameraPosition().target.latitude);
+                            getaddressfromlatlong(googleMap.getCameraPosition().target.latitude, googleMap.getCameraPosition().target.longitude, 1);
+                        }
+                    });
+
+
                     googleMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
                         @Override
                         public void onCameraChange(CameraPosition cameraPosition) {
                             Log.e("cameraPosition", "#" + cameraPosition.target.latitude);
-
-                            getaddressfromlatlong(cameraPosition.target.latitude, cameraPosition.target.longitude);
                         }
                     });
                 } catch (Exception e) {
@@ -197,7 +217,39 @@ public class TabOneFragment extends Fragment implements GoogleApiClient.Connecti
         });
     }
 
-    private void getaddressfromlatlong(double latitude, double longitude) {
+    private void getaddress(double latitude, double longitude) {
+        try {
+            LatLng mLatLng = new LatLng(latitude,longitude);
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+
+            Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
+            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+            if (addresses != null && addresses.size() > 0) {
+                String address = addresses.get(0).getAddressLine(0);
+                cityname = addresses.get(0).getLocality();
+                Log.e("cityname", "#>>>>>" + cityname);
+            }
+
+            googleMap.setMyLocationEnabled(true);
+            googleMap.getUiSettings().setMapToolbarEnabled(false);
+
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(mLatLng);
+            markerOptions.title(String.valueOf(mLatLng));
+            CameraPosition cameraPosition = new CameraPosition.Builder().target(mLatLng).zoom(12).build();
+            googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+            googleMap.addMarker(markerOptions);
+            mainmarker = googleMap.addMarker(markerOptions);
+            mainmarker.showInfoWindow();
+            googleMap.setInfoWindowAdapter(new CustomInfoWindowGoogleMap2(getActivity(),cityname));
+
+        } catch (Exception e) {
+
+        }
+    }
+
+    private void getaddressfromlatlong(double latitude, double longitude, int pos) {
         try {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
@@ -208,8 +260,13 @@ public class TabOneFragment extends Fragment implements GoogleApiClient.Connecti
                 String address = addresses.get(0).getAddressLine(0);
                 String city = addresses.get(0).getLocality();
                 Log.e("city", "#" + city);
+                if(pos == 0){
+                    cityname = addresses.get(0).getLocality();
+                }
 
-                getrequestbasedoncity(city);
+                if (pos == 1) {
+                    getrequestbasedoncity(city);
+                }
             }
         } catch (Exception e) {
 
@@ -262,7 +319,7 @@ public class TabOneFragment extends Fragment implements GoogleApiClient.Connecti
         image.setImageResource(R.mipmap.markernew);
         servicename.setVisibility(View.GONE);
 
-        try{
+        try {
             if (sResult != null) {
                 Log.e("size", "#" + sResult.getAdvertisements().size());
                 String UserId = sResult.getUserId().toString();
@@ -278,13 +335,15 @@ public class TabOneFragment extends Fragment implements GoogleApiClient.Connecti
                     String user = sResult.getAdvertisements().get(i).getUser().getUserName();
                     String locationName = sResult.getAdvertisements().get(i).getLocationName();
 
-                    Log.e("lat", "#" + lat);
-                    Log.e("d_lat", "#" + d_lat);
-                    load_marker(lat, lng, userId, categoryName, CategoryId, user, locationName, marker);
+//                    Log.e("lat", "#" + lat);
+//                    Log.e("d_lat", "#" + d_lat);
+//                    Log.e("userId", "#" + userId);
+
+                    load_marker(lat, lng, userId, categoryName, CategoryId, user, locationName, marker, sResult.getAdvertisements(), i);
 //                load_marker(d_lat,d_lng,marker);
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
 
@@ -310,25 +369,26 @@ public class TabOneFragment extends Fragment implements GoogleApiClient.Connecti
         }*/
     }
 
-    private void getJsonKey_value(String response){
+    private void getJsonKey_value(String response) {
         try {
             JSONObject jsonObject = new JSONObject(response);
             Iterator it = jsonObject.keys();
             while (it.hasNext()) {
                 String key = (String) it.next();
                 String value = jsonObject.getString(key);
-                Log.e("Key:Value", "" + key );
+//                Log.e("Key:Value", "" + key);
             }
         } catch (Exception e) {
 
         }
     }
 
-    private void load_marker(String lat, String lng, int userId, String categoryName, String CategoryId, String user, String locationName, View marker) {
+    private void load_marker(String lat, String lng, int userId, String categoryName, String CategoryId, String user, String locationName, View marker, final List<Advertisement> advertisements, int pos) {
+
         double d_lat = Double.parseDouble(lat);
         double d_lng = Double.parseDouble(lng);
 
-        Marker marker1 = googleMap.addMarker(new MarkerOptions()
+        /*Marker marker1 = googleMap.addMarker(new MarkerOptions()
                 .position(new LatLng(d_lat, d_lng))
                 .title(user)
                 .snippet(locationName)
@@ -339,8 +399,91 @@ public class TabOneFragment extends Fragment implements GoogleApiClient.Connecti
             public void onInfoWindowClick(Marker marker) {
                 Log.e("marker", "#" + marker.getTitle());
             }
+        });*/
+        final MarkerOptions markerOptions = new MarkerOptions();
+        final InfoWindowData info = new InfoWindowData();
+        info.setImage(categoryName);
+        info.setHotel(user);
+        info.setFood(locationName);
+        info.setTransport(categoryName);
+
+        Marker m = null;
+        markerOptions.position(new LatLng(d_lat, d_lng))
+//                .title(String.valueOf(locationName))
+//                    .snippet("Description")
+                .icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(getActivity(), marker)));
+        final CustomInfoWindowGoogleMap customInfoWindow = new CustomInfoWindowGoogleMap(getActivity());
+//        googleMap.setInfoWindowAdapter(customInfoWindow);
+
+        m = googleMap.addMarker(markerOptions);
+        m.setTag(info);
+        m.hideInfoWindow();
+
+        mHashMap.put(m, pos);
+
+        final Marker finalM = m;
+        googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                Log.e("getTitle", "#" + marker.getTitle());
+                if (constant.isEmptyString(marker.getTitle())) {
+                    try {
+                        int pos = mHashMap.get(marker);
+                        Log.e("Position of arraylist", pos + "");
+                        Log.e("getFood", "#" + advertisements.get(pos).getCategoryName());
+                        gotoNextActivity(pos, advertisements);
+                    } catch (Exception e) {
+
+                    }
+                }
+            }
         });
 
+        final Marker finalM1 = m;
+        googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                Log.e("markergetTitle", "#" + marker.getTitle());
+                if (constant.isEmptyString(marker.getTitle())) {
+                    try {
+                        int pos = mHashMap.get(marker);
+                        Log.e("Position of arraylist", pos + "");
+                        googleMap.setInfoWindowAdapter(customInfoWindow);
+
+                    } catch (Exception e) {
+
+                    }
+                }else{
+                    googleMap.setInfoWindowAdapter(new CustomInfoWindowGoogleMap2(getActivity(),cityname));
+                }
+                /*try {
+                    int pos = mHashMap.get(marker);
+                    Log.e("Position of arraylist", pos + "");
+                    googleMap.setInfoWindowAdapter(customInfoWindow);
+                    return false;
+                } catch (Exception e) {
+                    *//*marker.hideInfoWindow();
+                    finalM1.hideInfoWindow();*//*
+                    Log.e("markere", "#CAME" );
+                    googleMap.setInfoWindowAdapter(new CustomInfoWindowGoogleMap2(getActivity(),cityname));
+                    return false;
+                }*/
+                return false;
+            }
+        });
+    }
+
+    private void gotoNextActivity(int pos, List<Advertisement> advertisements) {
+        startActivity(new Intent(getActivity(), CommentsActivity.class).putExtra("CategoryName", advertisements.get(pos).getCategoryName())
+                .putExtra("UserName", advertisements.get(pos).getUser().getUserName()).putExtra("Location", advertisements.get(pos).getLocationName())
+                .putExtra("AttributeName1", advertisements.get(pos).getAttributes().get(0).getAttributeName())
+                .putExtra("CategoryName1", advertisements.get(pos).getAttributes().get(0).getCategoryName())
+                .putExtra("AttributeName2", advertisements.get(pos).getAttributes().get(1).getAttributeName())
+                .putExtra("CategoryName2", advertisements.get(pos).getAttributes().get(1).getCategoryName())
+                .putExtra("AttributeName3", advertisements.get(pos).getAttributes().get(2).getAttributeName())
+                .putExtra("CategoryName3", advertisements.get(pos).getAttributes().get(2).getCategoryName())
+                .putExtra("Id",String.valueOf(advertisements.get(pos).getId())).putExtra("UserId",advertisements.get(pos).getUserId())
+        );
     }
 
     private void loadmarkers() {

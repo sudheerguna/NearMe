@@ -55,19 +55,22 @@ public class TabThreeFragment extends Fragment implements GoogleApiClient.Connec
     Boolean checklatlng = false;
     ProgressDialog progressDialog;
     ProgressBar progressbar;
-    double double_lat,double_lng;
+    double double_lat, double_lng;
     private Boolean isStarted = true;
     private Boolean isVisible = false;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.tab_threefragment, container, false);
 
         savedInstance = savedInstanceState;
+        init();
         return rootView;
     }
+
     private void init() {
-        progressbar = rootView.findViewById(R.id.progressbar);
-        progressbar.setVisibility(View.GONE);
+//        progressbar = (ProgressBar) rootView.findViewById(R.id.progressbar);
+        rootView.findViewById(R.id.progressbar).setVisibility(View.GONE);
         CheckPermissions();
 
         rootView.findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
@@ -133,7 +136,7 @@ public class TabThreeFragment extends Fragment implements GoogleApiClient.Connec
 
                 mFusedLocationClient.requestLocationUpdates(locationRequest, mLocationCallback, Looper.myLooper());
 
-                try{
+                try {
                     googleMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
                         @Override
                         public void onCameraChange(CameraPosition cameraPosition) {
@@ -142,7 +145,7 @@ public class TabThreeFragment extends Fragment implements GoogleApiClient.Connec
                             getaddressfromlatlong(cameraPosition.target.latitude, cameraPosition.target.longitude);
                         }
                     });
-                }catch (Exception e){
+                } catch (Exception e) {
 
                 }
             }
@@ -211,8 +214,8 @@ public class TabThreeFragment extends Fragment implements GoogleApiClient.Connec
     @Override
     public void onResume() {
         super.onResume();
-        if(isStarted = false){
-            init();
+        if (isStarted = false) {
+//            init();
         }
     }
 
@@ -256,22 +259,23 @@ public class TabThreeFragment extends Fragment implements GoogleApiClient.Connec
         super.setUserVisibleHint(isVisibleToUser);
         isVisible = isVisibleToUser;
 
-        Log.e("isVisibleToUser3","#"+isVisible);
-        Log.e("isStarted3","#"+isStarted);
+        Log.e("isVisibleToUser3", "#" + isVisible);
+        Log.e("isStarted3", "#" + isStarted);
 
         if (isVisible) {
-            init();
+//            init();
         }
     }
 
     @Override
     public void onStart() {
         super.onStart();
+        Log.e("onStart", "#");
         isStarted = true;
 
         if (isVisible && isStarted) {
-            Log.e("valid","#");
-            init();
+            Log.e("valid", "#");
+//            init();
         }
     }
 }
