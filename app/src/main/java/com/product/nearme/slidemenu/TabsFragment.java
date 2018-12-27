@@ -50,7 +50,7 @@ public class TabsFragment extends Fragment {
     }
 
     private void setupViewPager(ViewPager viewPager) {
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getFragmentManager());
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getChildFragmentManager());
         adapter.addFrag(new TabOneFragment(), "PEOPLE");
         adapter.addFrag(new TabTwoFragment(), "EVENTS");
         adapter.addFrag(new TabThreeFragment(), "BUSINESS");
